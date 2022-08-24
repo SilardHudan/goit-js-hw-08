@@ -10,36 +10,33 @@ player.on('play', function () {
   if (!seconds) {
     seconds = 0;
   }
-        player
-            .setCurrentTime(seconds)
-            .then(function (seconds) {
-        console.log('Time has set to:' + seconds);
-        player.off('play');
-        })
-            .catch(function (error) {
-            switch (error.name) {
-                case 'RangeError':
-                console.error(
-                    "the time was less than 0 or greater than the video's duration"
-                );
-                break;
+  player
+    .setCurrentTime(seconds)
+    .then(function (seconds) {
+      console.log('Time has set to:' + seconds);
+      player.off('play');
+    })
+    .catch(function (error) {
+      switch (error.name) {
+        case 'RangeError':
+          console.error(
+            "the time was less than 0 or greater than the video's duration"
+          );
+          break;
 
-                default:
-                console.error('Vimeo player:error occurred', error);
-                break;
-            }
-            });
+        default:
+          console.error('Vimeo player:error occurred', error);
+          break;
+      }
+    });
 });
 
+function onTimeUpdate(data) {
+  localStorage.setItem('videoplayer-current-time', data.seconds);
+}
+player.on('timeupdate', throttle(onTimeUpdate, 1000));
 
-player.on('timeupdate', throttle(e => {
-    localStorage.setItem('videoplayer-current-time', e.seconds);
-    }, 1000)
-    );
-
-    
-player
-.setCurrentTime(localStorage.getItem('videoplayer-current-time'))
-.catch(function (error) {
-    console.error(error)
+player.getVideoTitle().then(function (title) {
+  console.log('title:', title);
 });
+
